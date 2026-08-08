@@ -1,6 +1,6 @@
-# XboxTLS13
+# XboxTLS 1.3
 
-XboxTLS13 is a TLS 1.3 client for Xbox 360 projects built with the Microsoft Xbox 360 XDK.
+This is a TLS 1.3 client for Xbox 360 projects built with the Microsoft Xbox 360 XDK.
 
 This repository is an **Xbox 360 XDK solution first**. Open `XboxTLS13.sln`, select `Debug | Xbox 360` or `Release | Xbox 360`, and build. The solution contains the TLS static library and a real Xbox application project that produces a `.xex`.
 
