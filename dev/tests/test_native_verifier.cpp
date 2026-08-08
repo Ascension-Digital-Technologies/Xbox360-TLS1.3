@@ -106,6 +106,17 @@ int main(int argc, char** argv) {
     f += check(v.verify_chain(c, "example.com") == XT_OK, "native RSA chain signature + hostname");
     f += check(v.verify_chain(c, "wrong.example") == XT_ERR_VERIFY,
                "native hostname mismatch rejected");
+
+    xt_u8 leaf_pin[32];
+    sha256(ByteSpan(&leaf[0], leaf.size()), leaf_pin);
+    f += check(v.set_leaf_certificate_sha256_pin(ByteSpan(leaf_pin, 32)) == XT_OK &&
+                   v.verify_chain(c, "example.com") == XT_OK,
+               "native leaf certificate pin accepted");
+    leaf_pin[0] ^= 1;
+    f += check(v.set_leaf_certificate_sha256_pin(ByteSpan(leaf_pin, 32)) == XT_OK &&
+                   v.verify_chain(c, "example.com") == XT_ERR_VERIFY,
+               "native leaf certificate pin mismatch rejected");
+    v.clear_leaf_certificate_sha256_pin();
     xt_u8 msg[130];
     memset(msg, 0x5a, sizeof(msg));
     std::vector<xt_u8> sig;

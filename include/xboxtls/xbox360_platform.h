@@ -19,6 +19,7 @@ class Xbox360SocketStream : public Stream {
     Xbox360SocketStream();
     virtual ~Xbox360SocketStream();
     Error connect_tcp(const char* hostname, xt_u16 port);
+    Error set_io_timeouts(xt_u32 send_timeout_ms, xt_u32 receive_timeout_ms);
     virtual Error send_all(ByteSpan data);
     virtual Error recv_some(MutableByteSpan buffer, size_t* received);
     virtual void close();

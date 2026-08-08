@@ -31,6 +31,7 @@ add_library(xboxtls13 STATIC
   src/x509/trust_store.cpp
   src/verifier/native/native_verifier.cpp
   src/platform/xbox360/platform_xbox360.cpp
+  src/platform/xbox360/xbox_client.cpp
 )
 add_library(XboxTLS13::xboxtls13 ALIAS xboxtls13)
 
@@ -57,30 +58,30 @@ if(XBOXTLS_BUILD_OPENSSL_VERIFIER)
 endif()
 
 if(BUILD_TESTING AND XBOXTLS_BUILD_TESTS)
-  add_executable(xboxtls13_tests tests/test_core.cpp)
+  add_executable(xboxtls13_tests dev/tests/test_core.cpp)
   target_link_libraries(xboxtls13_tests PRIVATE xboxtls13)
   add_test(NAME core COMMAND xboxtls13_tests)
 
-  add_executable(xboxtls13_auth_tests tests/test_auth.cpp)
+  add_executable(xboxtls13_auth_tests dev/tests/test_auth.cpp)
   target_link_libraries(xboxtls13_auth_tests PRIVATE xboxtls13)
   add_test(NAME auth COMMAND xboxtls13_auth_tests)
 
   if(TARGET xboxtls13_openssl)
-    add_executable(xboxtls13_openssl_tests tests/test_openssl_verifier.cpp)
+    add_executable(xboxtls13_openssl_tests dev/tests/test_openssl_verifier.cpp)
     target_link_libraries(xboxtls13_openssl_tests PRIVATE xboxtls13_openssl OpenSSL::Crypto)
     add_test(NAME openssl_verifier COMMAND xboxtls13_openssl_tests
-      ${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/root.der
-      ${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/leaf.der
-      ${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/certverify-rsa-pss.sig)
+      ${CMAKE_CURRENT_SOURCE_DIR}/dev/tests/fixtures/root.der
+      ${CMAKE_CURRENT_SOURCE_DIR}/dev/tests/fixtures/leaf.der
+      ${CMAKE_CURRENT_SOURCE_DIR}/dev/tests/fixtures/certverify-rsa-pss.sig)
 
-    add_executable(xboxtls13_native_verifier_tests tests/test_native_verifier.cpp)
+    add_executable(xboxtls13_native_verifier_tests dev/tests/test_native_verifier.cpp)
     target_link_libraries(xboxtls13_native_verifier_tests PRIVATE xboxtls13 OpenSSL::Crypto)
     add_test(NAME native_verifier COMMAND xboxtls13_native_verifier_tests
-      ${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/root.der
-      ${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/leaf.der
-      ${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/native-rsa-pss.sig
-      ${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/pss-root.der
-      ${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/pss-leaf.der)
+      ${CMAKE_CURRENT_SOURCE_DIR}/dev/tests/fixtures/root.der
+      ${CMAKE_CURRENT_SOURCE_DIR}/dev/tests/fixtures/leaf.der
+      ${CMAKE_CURRENT_SOURCE_DIR}/dev/tests/fixtures/native-rsa-pss.sig
+      ${CMAKE_CURRENT_SOURCE_DIR}/dev/tests/fixtures/pss-root.der
+      ${CMAKE_CURRENT_SOURCE_DIR}/dev/tests/fixtures/pss-leaf.der)
   endif()
 endif()
 
@@ -114,7 +115,7 @@ else()
   set(XBOXTLS_CONFIG_OPENSSL "")
 endif()
 configure_package_config_file(
-  cmake/XboxTLS13Config.cmake.in
+  dev/cmake/XboxTLS13Config.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/XboxTLS13Config.cmake
   INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/XboxTLS13
 )

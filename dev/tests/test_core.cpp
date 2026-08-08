@@ -74,6 +74,22 @@ int main() {
     fails +=
         check(e == XT_OK && n > 100 && ch[0] == HS_CLIENT_HELLO, "TLS 1.3 ClientHello builder");
 
+    cp.alpn = "h2,http/1.1";
+    size_t multi_alpn_n = 0;
+    e = build_client_hello(cp, MutableByteSpan(ch, sizeof(ch)), &multi_alpn_n);
+    bool saw_h2 = false, saw_http11 = false;
+    for (size_t i = 0; i + 1 < multi_alpn_n; ++i) {
+        if (ch[i] == 'h' && ch[i + 1] == '2')
+            saw_h2 = true;
+    }
+    for (size_t i = 0; i + 7 < multi_alpn_n; ++i) {
+        if (memcmp(ch + i, "http/1.1", 8) == 0)
+            saw_http11 = true;
+    }
+    fails += check(e == XT_OK && saw_h2 && saw_http11,
+                   "ClientHello multi-ALPN list encoding");
+    cp.alpn = "http/1.1";
+
     xt_u8 gkey[16] = {0}, giv[12] = {0}, gpt[16] = {0}, gct[16], gtag[16];
     Error ge = aes128_gcm_encrypt(gkey, giv, ByteSpan(0, 0), ByteSpan(gpt, 16),
                                   MutableByteSpan(gct, 16), gtag);

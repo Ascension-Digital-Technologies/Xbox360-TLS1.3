@@ -90,6 +90,33 @@ Error Xbox360SocketStream::connect_tcp(const char* hostname, xt_u16 port) {
     }
     return XT_OK;
 }
+
+Error Xbox360SocketStream::set_io_timeouts(xt_u32 send_timeout_ms, xt_u32 receive_timeout_ms) {
+    if (socket_ == INVALID_SOCKET)
+        return XT_ERR_CLOSED;
+
+    DWORD send_timeout = (DWORD)send_timeout_ms;
+    DWORD receive_timeout = (DWORD)receive_timeout_ms;
+
+    if (setsockopt(
+            socket_,
+            SOL_SOCKET,
+            SO_SNDTIMEO,
+            reinterpret_cast<const char*>(&send_timeout),
+            sizeof(send_timeout)) == SOCKET_ERROR)
+        return XT_ERR_IO;
+
+    if (setsockopt(
+            socket_,
+            SOL_SOCKET,
+            SO_RCVTIMEO,
+            reinterpret_cast<const char*>(&receive_timeout),
+            sizeof(receive_timeout)) == SOCKET_ERROR)
+        return XT_ERR_IO;
+
+    return XT_OK;
+}
+
 Error Xbox360SocketStream::send_all(ByteSpan data) {
     if (socket_ == INVALID_SOCKET || (!data.data && data.size))
         return XT_ERR_INVALID_ARGUMENT;

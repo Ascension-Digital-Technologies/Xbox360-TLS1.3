@@ -84,6 +84,209 @@ It is used for Xbox kernel declarations/imports that are not exposed by every XD
 
 The Xbox project files already add `external\xkelib` to their include paths and link `xkelib.lib` into the XEX target, so you should not need to copy it into your global XDK installation.
 
+
+## Drop-in embedding API
+
+For most Xbox projects, you do not need to wire `Xbox360Platform`, `Xbox360SocketStream`, `NativeServerAuthVerifier`, and `TlsClient` manually anymore.
+
+Use the high-level Xbox wrapper:
+
+```cpp
+#include "xboxtls/xboxtls.h"
+
+using namespace xboxtls;
+
+XboxTlsClient tls;
+
+if (tls.initialize() != XT_OK)
+    return;
+
+if (tls.connect("example.com") != XT_OK)
+    return;
+
+const char request[] =
+    "GET / HTTP/1.1\r\n"
+    "Host: example.com\r\n"
+    "Connection: close\r\n\r\n";
+
+tls.send(request, sizeof(request) - 1);
+
+char buffer[1024];
+size_t received = 0;
+
+while (tls.receive(buffer, sizeof(buffer), &received) == XT_OK) {
+    // Use the decrypted bytes in buffer[0..received).
+}
+
+tls.close();
+```
+
+`initialize()` uses `game:\roots.xts` by default. `connect()` defaults to port 443 and ALPN `http/1.1`.
+
+The wrapper owns:
+
+- Xbox networking startup and cleanup
+- the TCP socket
+- the TLS connection state
+- the native certificate verifier
+- trust-store memory
+- reconnect/reset handling
+
+If your project needs custom transport or verifier behavior, the lower-level `TlsClient` API is still available.
+
+### Embedding in an existing XEX
+
+The cleanest option is to add the `XboxTLS13` project from `XboxTLS13.sln` to your existing solution and add a project reference from your XEX project.
+
+Then include:
+
+```cpp
+#include "xboxtls/xboxtls.h"
+```
+
+Your XEX project needs access to:
+
+```text
+include\
+external\xkelib\
+```
+
+and it needs `xkelib.lib` available to the linker. The XboxTLS13 project already contains the rest of the TLS implementation.
+
+
+## Advanced embedding options
+
+The two-call path still works:
+
+```cpp
+XboxTlsClient tls;
+tls.initialize();
+tls.connect("example.com");
+```
+
+For projects that need tighter control, use `XboxTlsOptions`:
+
+```cpp
+XboxTlsOptions options;
+options.trust_store_path = "game:\\certs\\roots.xts";
+options.port = 443;
+
+// Single protocol or comma-separated preference order.
+options.alpn = "h2,http/1.1";
+options.require_alpn = true;
+
+// Prefer P-256 first instead of the default X25519.
+options.preferred_group = GROUP_SECP256R1;
+
+// Add zero-byte TLSInnerPlaintext padding to application records.
+options.application_record_padding = 32;
+
+// Applied to the connected Xbox socket. Zero keeps the platform default.
+options.send_timeout_ms = 10000;
+options.receive_timeout_ms = 15000;
+
+// Optional 32-byte SHA-256 hash of the DER leaf certificate.
+// This is checked in addition to normal chain + hostname validation.
+options.certificate_sha256_pin = expected_leaf_sha256;
+
+options.auto_reconnect = true;
+options.send_close_notify = true;
+options.request_peer_key_update = false;
+
+XboxTlsClient tls;
+
+if (tls.initialize(options) != XT_OK)
+    return;
+
+if (tls.connect("api.example.com", options) != XT_OK) {
+    printf("TLS error: %d alert=%u/%u\n",
+           (int)tls.last_error(),
+           (unsigned)tls.last_alert_level(),
+           (unsigned)tls.last_alert_description());
+    return;
+}
+```
+
+### Available controls
+
+`XboxTlsOptions` currently exposes:
+
+- `trust_store_path`
+- `port`
+- `alpn`
+- `require_alpn`
+- `preferred_group` (`GROUP_X25519` or `GROUP_SECP256R1`)
+- `application_record_padding` (clamped to 255 bytes)
+- `send_timeout_ms`
+- `receive_timeout_ms`
+- `certificate_sha256_pin`
+- `auto_reconnect`
+- `send_close_notify`
+- `request_peer_key_update`
+
+ALPN accepts either one protocol:
+
+```cpp
+options.alpn = "http/1.1";
+```
+
+or a comma-separated preference list:
+
+```cpp
+options.alpn = "h2,http/1.1";
+```
+
+The wire format is a normal TLS ALPN protocol-name list; the comma-separated string is only the convenient C++ configuration format.
+
+### Certificate pinning
+
+Pinning does not replace trust validation. XboxTLS13 first validates the certificate chain and hostname, then compares the SHA-256 digest of the DER leaf certificate when a pin is configured.
+
+```cpp
+xt_u8 pin[32] = {
+    // expected SHA-256 digest
+};
+
+options.certificate_sha256_pin = pin;
+```
+
+A pin mismatch returns `XT_ERR_VERIFY`.
+
+### Manual traffic-key rotation
+
+```cpp
+tls.key_update();
+```
+
+To rotate the local application traffic key and ask the peer to update its sending key too:
+
+```cpp
+tls.key_update(true);
+```
+
+### Runtime trust-store reload
+
+```cpp
+tls.reload_trust_store("game:\\certs\\new-roots.xts");
+```
+
+### Connection statistics
+
+```cpp
+const XboxTlsStats& stats = tls.stats();
+
+printf("sent: %llu\n", stats.bytes_sent);
+printf("received: %llu\n", stats.bytes_received);
+printf("connect attempts: %u\n", stats.connect_attempts);
+printf("successful connections: %u\n", stats.successful_connections);
+printf("failed connections: %u\n", stats.failed_connections);
+printf("key updates: %u\n", stats.key_updates_sent);
+```
+
+Use `tls.reset_stats()` to clear the counters.
+
+The lower-level `TlsClient` API is still available when you need a custom transport, verifier, or direct protocol control.
+
 ## Running the demo
 
 `XboxTLS13Demo.xex` performs an authenticated TLS 1.3 HTTPS request.
@@ -91,7 +294,7 @@ The Xbox project files already add `external\xkelib` to their include paths and 
 Before running it, create a trust store from DER root certificates:
 
 ```sh
-python tools/make_trust_store.py roots.xts root1.der root2.der
+python dev/dev/tools/make_trust_store.py roots.xts root1.der root2.der
 ```
 
 Deploy the resulting file beside the XEX as:
@@ -152,9 +355,7 @@ src/
   platform/xbox360/          Xbox networking and entropy adapter
 
 xdk/XboxTLS13Demo/main.cpp   XEX demo entry point
-tests/                       Host-side regression tests
-tools/make_trust_store.py    XTS1 trust-store generator
-```
+dev/```
 
 ## Host tests
 
@@ -192,7 +393,7 @@ The adapter uses Xbox Winsock/XNet and `XeCryptRandom`. There is no `rand()` fal
 
 Xbox 360 XDK revisions can differ in their Visual Studio integration and exact SDK declarations. The portable host implementation and tests can be validated here, but the final `.xex` project still has to be built with the XDK revision installed on your Windows development machine. If that build exposes an XDK-specific project or API difference, it should be fixed in `xdk/` or the Xbox platform adapter rather than changing the TLS core.
 
-See `docs/XDK-INTEGRATION.md` for the target-side checklist.
+See `xdk/README.md` for the target-side checklist.
 
 ## Security
 

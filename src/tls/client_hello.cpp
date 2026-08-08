@@ -123,14 +123,45 @@ static bool ext_cookie(Writer& w, ByteSpan cookie) {
 static bool ext_alpn(Writer& w, const char* alpn) {
     if (!alpn || !*alpn)
         return true;
-    size_t a = strlen(alpn);
-    if (a > 255)
-        return false;
+
+    size_t list_size = 0;
+    const char* p = alpn;
+
+    while (*p) {
+        const char* start = p;
+        while (*p && *p != ',')
+            ++p;
+
+        size_t length = (size_t)(p - start);
+        if (length == 0 || length > 255)
+            return false;
+
+        list_size += 1 + length;
+        if (list_size > 65535)
+            return false;
+
+        if (*p == ',')
+            ++p;
+    }
+
     w.put16(0x0010);
-    w.put16((xt_u16)(3 + a));
-    w.put16((xt_u16)(1 + a));
-    w.put8((xt_u8)a);
-    w.bytes(alpn, a);
+    w.put16((xt_u16)(2 + list_size));
+    w.put16((xt_u16)list_size);
+
+    p = alpn;
+    while (*p) {
+        const char* start = p;
+        while (*p && *p != ',')
+            ++p;
+
+        size_t length = (size_t)(p - start);
+        w.put8((xt_u8)length);
+        w.bytes(start, length);
+
+        if (*p == ',')
+            ++p;
+    }
+
     return w.ok();
 }
 

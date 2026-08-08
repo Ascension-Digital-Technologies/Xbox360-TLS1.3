@@ -21,6 +21,8 @@ struct ClientConfig {
     ServerAuthVerifier* verifier;
     const char* hostname;
     const char* alpn;
+    NamedGroup preferred_group;
+    size_t application_record_padding;
     ClientConfig();
 };
 
@@ -33,6 +35,8 @@ class TlsClient {
     Error send(ByteSpan data);
     Error recv(MutableByteSpan out, size_t* received);
     Error close();
+    Error reset();
+    Error key_update(bool request_peer_update = false);
 
     ClientState state() const {
         return state_;

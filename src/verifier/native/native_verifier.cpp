@@ -185,9 +185,26 @@ static Error cert_signature(ByteSpan der, CertSig* out) {
     return XT_OK;
 }
 
-NativeServerAuthVerifier::NativeServerAuthVerifier(Platform* p) : platform_(p), anchor_count_(0) {
+NativeServerAuthVerifier::NativeServerAuthVerifier(Platform* p)
+    : platform_(p), anchor_count_(0), leaf_certificate_sha256_pin_enabled_(false) {
     memset(anchors_, 0, sizeof(anchors_));
+    memset(leaf_certificate_sha256_pin_, 0, sizeof(leaf_certificate_sha256_pin_));
 }
+
+Error NativeServerAuthVerifier::set_leaf_certificate_sha256_pin(ByteSpan pin32) {
+    if (!pin32.data || pin32.size != 32)
+        return XT_ERR_INVALID_ARGUMENT;
+
+    memcpy(leaf_certificate_sha256_pin_, pin32.data, 32);
+    leaf_certificate_sha256_pin_enabled_ = true;
+    return XT_OK;
+}
+
+void NativeServerAuthVerifier::clear_leaf_certificate_sha256_pin() {
+    memset(leaf_certificate_sha256_pin_, 0, sizeof(leaf_certificate_sha256_pin_));
+    leaf_certificate_sha256_pin_enabled_ = false;
+}
+
 Error NativeServerAuthVerifier::add_trust_anchor(ByteSpan der) {
     if (!der.data || !der.size)
         return XT_ERR_INVALID_ARGUMENT;
@@ -235,6 +252,20 @@ Error NativeServerAuthVerifier::verify_chain(const CertificateChainView& chain,
     Error e = x509_parse_certificate(chain.entries[0].der, &leaf);
     if (e != XT_OK)
         return e;
+
+    if (leaf_certificate_sha256_pin_enabled_) {
+        xt_u8 digest[32];
+        sha256(chain.entries[0].der, digest);
+
+        xt_u8 difference = 0;
+        for (size_t i = 0; i < sizeof(digest); ++i)
+            difference |= (xt_u8)(digest[i] ^ leaf_certificate_sha256_pin_[i]);
+
+        memset(digest, 0, sizeof(digest));
+
+        if (difference != 0)
+            return XT_ERR_VERIFY;
+    }
     if (!leaf.validity_present || (leaf.basic_constraints_present && leaf.is_ca))
         return XT_ERR_VERIFY;
     if (leaf.key_usage_present && !leaf.key_usage_digital_signature)

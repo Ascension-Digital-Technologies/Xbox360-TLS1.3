@@ -104,6 +104,7 @@
     <ClCompile Include="..\..\src\x509\trust_store.cpp" />
     <ClCompile Include="..\..\src\verifier\native\native_verifier.cpp" />
     <ClCompile Include="..\..\src\platform\xbox360\platform_xbox360.cpp" />
+    <ClCompile Include="..\..\src\platform\xbox360\xbox_client.cpp" />
   </ItemGroup>
 
   <ItemGroup>
@@ -124,6 +125,7 @@
     <ClInclude Include="..\..\include\xboxtls\x25519.h" />
     <ClInclude Include="..\..\include\xboxtls\x509.h" />
     <ClInclude Include="..\..\include\xboxtls\xbox360_platform.h" />
+    <ClInclude Include="..\..\include\xboxtls\xbox_client.h" />
     <ClInclude Include="..\..\include\xboxtls\xboxtls.h" />
   </ItemGroup>
 

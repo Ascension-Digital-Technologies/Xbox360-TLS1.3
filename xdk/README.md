@@ -79,7 +79,7 @@ Keep XDK-specific fixes there. Do not spread XDK headers or `_XBOX` special case
 Generate an `XTS1` trust store on the development PC:
 
 ```sh
-python tools/make_trust_store.py roots.xts root1.der root2.der
+python dev/tools/make_trust_store.py roots.xts root1.der root2.der
 ```
 
 Deploy it as:
@@ -109,3 +109,38 @@ After the XEX builds, verify these paths on real hardware:
 - malformed record rejection
 
 The host CMake tests do not replace this target-side validation.
+
+## Solution Explorer grouping
+
+The Xbox projects include `.vcxproj.filters` files so Visual Studio groups files by purpose instead of showing one flat list.
+
+`XboxTLS13` is grouped into:
+
+```text
+Header Files
+  Core
+  TLS
+  Crypto
+  X.509
+  Platform
+
+Source Files
+  Core
+  TLS
+  Crypto
+  X.509
+  Platform
+
+Project Files
+```
+
+`XboxTLS13Demo` is grouped into:
+
+```text
+Source Files
+Header Files
+Project Files
+References
+```
+
+These are Visual Studio filters only; they do not change the physical source layout or build output.

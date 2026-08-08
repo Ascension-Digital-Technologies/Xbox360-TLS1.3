@@ -16,6 +16,7 @@
 #include "x25519.h"
 #include "x509.h"
 #include "xbox360_platform.h"
+#include "xbox_client.h"
 
 #define XBOXTLS_VERSION_MAJOR 1
 #define XBOXTLS_VERSION_MINOR 0

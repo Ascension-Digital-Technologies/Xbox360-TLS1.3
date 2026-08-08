@@ -6,7 +6,14 @@
 
 namespace xboxtls {
 
-ClientConfig::ClientConfig() : platform(0), stream(0), verifier(0), hostname(0), alpn(0) {}
+ClientConfig::ClientConfig()
+    : platform(0),
+      stream(0),
+      verifier(0),
+      hostname(0),
+      alpn(0),
+      preferred_group(GROUP_X25519),
+      application_record_padding(0) {}
 
 TlsClient::TlsClient()
     : state_(CLIENT_IDLE), client_hello_len_(0),
@@ -122,17 +129,29 @@ Error TlsClient::connect(const ClientConfig& c) {
         return e;
     }
 
-    NamedGroup active_group = GROUP_X25519;
-    size_t public_len = 32;
-    e = c.platform->random_bytes(MutableByteSpan(private_key_, 32));
-    if (e != XT_OK) {
-        fail();
-        return e;
+    NamedGroup active_group = c.preferred_group;
+    size_t public_len = active_group == GROUP_SECP256R1 ? 65 : 32;
+    if (active_group == GROUP_SECP256R1) {
+        e = XT_ERR_VERIFY;
+        for (int attempt = 0; attempt < 16 && e != XT_OK; ++attempt) {
+            e = c.platform->random_bytes(MutableByteSpan(private_key_, 32));
+            if (e != XT_OK) {
+                fail();
+                return e;
+            }
+            e = p256_public_from_private(private_key_, public_key_);
+        }
+    } else if (active_group == GROUP_X25519) {
+        e = c.platform->random_bytes(MutableByteSpan(private_key_, 32));
+        if (e == XT_OK) {
+            private_key_[0] &= 248;
+            private_key_[31] &= 127;
+            private_key_[31] |= 64;
+            e = x25519_public_from_private(private_key_, public_key_);
+        }
+    } else {
+        e = XT_ERR_UNSUPPORTED;
     }
-    private_key_[0] &= 248;
-    private_key_[31] &= 127;
-    private_key_[31] |= 64;
-    e = x25519_public_from_private(private_key_, public_key_);
     if (e != XT_OK) {
         fail();
         return e;
@@ -546,17 +565,63 @@ Error TlsClient::process_post_handshake(ByteSpan bytes) {
     }
 }
 
+
+Error TlsClient::key_update(bool request_peer_update) {
+    if (state_ != CLIENT_CONNECTED)
+        return XT_ERR_CLOSED;
+
+    xt_u8 message[5] = {
+        HS_KEY_UPDATE,
+        0,
+        0,
+        1,
+        request_peer_update ? 1 : 0
+    };
+
+    Error e = send_protected(CONTENT_HANDSHAKE, ByteSpan(message, sizeof(message)));
+    if (e != XT_OK) {
+        fail();
+        return e;
+    }
+
+    e = update_traffic_secret_sha256(
+        schedule_.client_application_traffic_secret,
+        &client_app_keys_);
+    if (e != XT_OK) {
+        fail();
+        return e;
+    }
+
+    return XT_OK;
+}
+
 Error TlsClient::send(ByteSpan data) {
     if (state_ != CLIENT_CONNECTED)
         return XT_ERR_CLOSED;
     if (data.size && !data.data)
         return XT_ERR_INVALID_ARGUMENT;
     size_t off = 0;
+    size_t padding = config_.application_record_padding;
+    if (padding > 255)
+        padding = 255;
+
+    const size_t max_content = 16623 - padding;
     while (off < data.size) {
         size_t n = data.size - off;
-        if (n > 16384)
-            n = 16384;
-        Error e = send_protected(CONTENT_APPLICATION_DATA, ByteSpan(data.data + off, n));
+        if (n > max_content)
+            n = max_content;
+
+        xt_u8 record[16645];
+        size_t written = 0;
+        Error e = protect_record_aes128_gcm(
+            &client_app_keys_,
+            CONTENT_APPLICATION_DATA,
+            ByteSpan(data.data + off, n),
+            padding,
+            MutableByteSpan(record, sizeof(record)),
+            &written);
+        if (e == XT_OK)
+            e = config_.stream->send_all(ByteSpan(record, written));
         if (e != XT_OK) {
             fail();
             return e;
@@ -650,6 +715,29 @@ Error TlsClient::recv(MutableByteSpan out, size_t* received) {
         fail();
         return XT_ERR_BAD_RECORD;
     }
+}
+
+
+Error TlsClient::reset() {
+    if (state_ == CLIENT_HANDSHAKING)
+        return XT_ERR_INVALID_ARGUMENT;
+
+    if (config_.stream)
+        config_.stream->close();
+
+    wipe_secrets();
+    config_ = ClientConfig();
+    transcript_.reset();
+    deframer_.reset();
+    certificate_storage_len_ = 0;
+    client_hello_len_ = 0;
+    negotiated_alpn_[0] = 0;
+    pending_app_offset_ = 0;
+    pending_app_length_ = 0;
+    last_alert_level_ = 0;
+    last_alert_description_ = 0;
+    state_ = CLIENT_IDLE;
+    return XT_OK;
 }
 
 Error TlsClient::close() {

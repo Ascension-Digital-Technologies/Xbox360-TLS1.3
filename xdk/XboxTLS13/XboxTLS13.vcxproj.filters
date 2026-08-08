@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{D0B17040-D7E6-44B5-9C96-B8F476F4D753}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core">
+      <UniqueIdentifier>{512664CF-0F4D-4F29-909D-4FCC3242CBEC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\TLS">
+      <UniqueIdentifier>{2B0AE311-631E-45F1-BB94-5812EAC4A467}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Crypto">
+      <UniqueIdentifier>{C7898266-7DB9-4EF4-9469-36C017A553FE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\X.509">
+      <UniqueIdentifier>{CA63C369-BE15-4813-A65E-7ABB118938C8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Platform">
+      <UniqueIdentifier>{EA3B4CCB-BD32-4EDC-9B82-B2CFEE19E0EA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{B2B0825A-44D5-4980-8356-DDE354FC8485}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{E65461A2-5700-41EF-8B62-00024DFFA51D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\TLS">
+      <UniqueIdentifier>{30D65068-B14B-4CA5-B51F-18B1052FAAB2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Crypto">
+      <UniqueIdentifier>{A76D7A70-735D-40C7-B5FE-DBF6CBFCA234}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\X.509">
+      <UniqueIdentifier>{DF06DF7C-E273-4CC9-BF05-0E150CB352A8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Platform">
+      <UniqueIdentifier>{C2168F14-3849-477D-9BEA-DBF5A628A4C9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Project Files">
+      <UniqueIdentifier>{EBC5257F-F7DB-42EF-8081-56639B96B03C}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\xboxtls\aes_gcm.h">
+      <Filter>Header Files\Crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xboxtls\authentication.h">
+      <Filter>Header Files\TLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xboxtls\connection.h">
+      <Filter>Header Files\TLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xboxtls\endian.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xboxtls\error.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xboxtls\hkdf.h">
+      <Filter>Header Files\Crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xboxtls\native_verifier.h">
+      <Filter>Header Files\X.509</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xboxtls\openssl_verifier.h">
+      <Filter>Header Files\X.509</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xboxtls\p256.h">
+      <Filter>Header Files\Crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xboxtls\platform.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xboxtls\sha256.h">
+      <Filter>Header Files\Crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xboxtls\tls13.h">
+      <Filter>Header Files\TLS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xboxtls\trust_store.h">
+      <Filter>Header Files\X.509</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xboxtls\types.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xboxtls\x25519.h">
+      <Filter>Header Files\Crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xboxtls\x509.h">
+      <Filter>Header Files\X.509</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xboxtls\xbox360_platform.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xboxtls\xbox_client.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\xboxtls\xboxtls.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\crypto\sha256.cpp">
+      <Filter>Source Files\Crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\crypto\hkdf.cpp">
+      <Filter>Source Files\Crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\crypto\aes_gcm.cpp">
+      <Filter>Source Files\Crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\crypto\x25519.cpp">
+      <Filter>Source Files\Crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\crypto\rsa_verify.cpp">
+      <Filter>Source Files\Crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\crypto\p256_verify.cpp">
+      <Filter>Source Files\Crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\tls\record.cpp">
+      <Filter>Source Files\TLS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\tls\protected_record.cpp">
+      <Filter>Source Files\TLS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\tls\transcript.cpp">
+      <Filter>Source Files\TLS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\tls\key_schedule.cpp">
+      <Filter>Source Files\TLS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\tls\client_hello.cpp">
+      <Filter>Source Files\TLS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\tls\server_hello.cpp">
+      <Filter>Source Files\TLS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\tls\handshake.cpp">
+      <Filter>Source Files\TLS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\tls\authentication.cpp">
+      <Filter>Source Files\TLS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\tls\connection.cpp">
+      <Filter>Source Files\TLS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\x509\x509.cpp">
+      <Filter>Source Files\X.509</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\x509\trust_store.cpp">
+      <Filter>Source Files\X.509</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\verifier\native\native_verifier.cpp">
+      <Filter>Source Files\X.509</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\platform\xbox360\platform_xbox360.cpp">
+      <Filter>Source Files\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\platform\xbox360\xbox_client.cpp">
+      <Filter>Source Files\Platform</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
