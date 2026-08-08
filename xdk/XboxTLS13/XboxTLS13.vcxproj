@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Xbox 360">
+      <Configuration>Debug</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Xbox 360">
+      <Configuration>Release</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{A49D9C6A-6E40-4FB8-B8F4-8D866B8770B1}</ProjectGuid>
+    <Keyword>Xbox360Proj</Keyword>
+    <RootNamespace>XboxTLS13</RootNamespace>
+    <ProjectName>XboxTLS13</ProjectName>
+  </PropertyGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>2010-01</PlatformToolset>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>2010-01</PlatformToolset>
+  </PropertyGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"
+            Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"
+            Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"
+            Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"
+            Label="LocalAppDataPlatform" />
+  </ImportGroup>
+
+  <PropertyGroup Label="UserMacros" />
+
+  <PropertyGroup>
+    <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
+    <TargetName>XboxTLS13</TargetName>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\include;$(ProjectDir)..\..\external\xkelib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_XBOX;XBOXTLS_XDK;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+  </ItemDefinitionGroup>
+
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox 360'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\include;$(ProjectDir)..\..\external\xkelib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_XBOX;XBOXTLS_XDK;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+  </ItemDefinitionGroup>
+
+  <ItemGroup>
+    <ClCompile Include="..\..\src\crypto\sha256.cpp" />
+    <ClCompile Include="..\..\src\crypto\hkdf.cpp" />
+    <ClCompile Include="..\..\src\crypto\aes_gcm.cpp" />
+    <ClCompile Include="..\..\src\crypto\x25519.cpp" />
+    <ClCompile Include="..\..\src\crypto\rsa_verify.cpp" />
+    <ClCompile Include="..\..\src\crypto\p256_verify.cpp" />
+    <ClCompile Include="..\..\src\tls\record.cpp" />
+    <ClCompile Include="..\..\src\tls\protected_record.cpp" />
+    <ClCompile Include="..\..\src\tls\transcript.cpp" />
+    <ClCompile Include="..\..\src\tls\key_schedule.cpp" />
+    <ClCompile Include="..\..\src\tls\client_hello.cpp" />
+    <ClCompile Include="..\..\src\tls\server_hello.cpp" />
+    <ClCompile Include="..\..\src\tls\handshake.cpp" />
+    <ClCompile Include="..\..\src\tls\authentication.cpp" />
+    <ClCompile Include="..\..\src\tls\connection.cpp" />
+    <ClCompile Include="..\..\src\x509\x509.cpp" />
+    <ClCompile Include="..\..\src\x509\trust_store.cpp" />
+    <ClCompile Include="..\..\src\verifier\native\native_verifier.cpp" />
+    <ClCompile Include="..\..\src\platform\xbox360\platform_xbox360.cpp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClInclude Include="..\..\include\xboxtls\aes_gcm.h" />
+    <ClInclude Include="..\..\include\xboxtls\authentication.h" />
+    <ClInclude Include="..\..\include\xboxtls\connection.h" />
+    <ClInclude Include="..\..\include\xboxtls\endian.h" />
+    <ClInclude Include="..\..\include\xboxtls\error.h" />
+    <ClInclude Include="..\..\include\xboxtls\hkdf.h" />
+    <ClInclude Include="..\..\include\xboxtls\native_verifier.h" />
+    <ClInclude Include="..\..\include\xboxtls\openssl_verifier.h" />
+    <ClInclude Include="..\..\include\xboxtls\p256.h" />
+    <ClInclude Include="..\..\include\xboxtls\platform.h" />
+    <ClInclude Include="..\..\include\xboxtls\sha256.h" />
+    <ClInclude Include="..\..\include\xboxtls\tls13.h" />
+    <ClInclude Include="..\..\include\xboxtls\trust_store.h" />
+    <ClInclude Include="..\..\include\xboxtls\types.h" />
+    <ClInclude Include="..\..\include\xboxtls\x25519.h" />
+    <ClInclude Include="..\..\include\xboxtls\x509.h" />
+    <ClInclude Include="..\..\include\xboxtls\xbox360_platform.h" />
+    <ClInclude Include="..\..\include\xboxtls\xboxtls.h" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <XboxTLSBinDir>$(SolutionDir)bin\$(Configuration)\</XboxTLSBinDir>
+  </PropertyGroup>
+  <Target Name="CopyXboxTLSLibrary" AfterTargets="Build">
+    <MakeDir Directories="$(XboxTLSBinDir)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(XboxTLSBinDir)" SkipUnchangedFiles="true"
+          Condition="Exists('$(TargetPath)')" />
+  </Target>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  portable:
+    name: Portable / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake --preset portable
+      - name: Build
+        run: cmake --build --preset portable
+      - name: Test
+        run: ctest --preset portable
+
+  reference-verifier:
+    name: OpenSSL reference / Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake --preset default
+      - name: Build
+        run: cmake --build --preset default
+      - name: Test
+        run: ctest --preset default

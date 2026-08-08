@@ -1,0 +1,37 @@
+#ifndef XBOXTLS_XBOX360_PLATFORM_H
+#define XBOXTLS_XBOX360_PLATFORM_H
+
+#include "platform.h"
+
+#if defined(_XBOX)
+#include <xtl.h>
+
+namespace xboxtls {
+
+class Xbox360Platform : public Platform {
+  public:
+    virtual Error random_bytes(MutableByteSpan out);
+    virtual xt_u64 unix_time_seconds();
+};
+
+class Xbox360SocketStream : public Stream {
+  public:
+    Xbox360SocketStream();
+    virtual ~Xbox360SocketStream();
+    Error connect_tcp(const char* hostname, xt_u16 port);
+    virtual Error send_all(ByteSpan data);
+    virtual Error recv_some(MutableByteSpan buffer, size_t* received);
+    virtual void close();
+    bool is_open() const;
+
+  private:
+    SOCKET socket_;
+};
+
+Error xbox360_network_startup();
+void xbox360_network_cleanup();
+
+} // namespace xboxtls
+#endif
+
+#endif

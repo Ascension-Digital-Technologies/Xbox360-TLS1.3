@@ -1,0 +1,29 @@
+name: Bug report
+description: Report a reproducible XboxTLS13 defect
+title: "[bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "For security vulnerabilities, use the private process described in SECURITY.md instead of a public issue."
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      description: Minimal steps, server/profile information, and relevant logs without secrets.
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Platform/toolchain
+      placeholder: "Xbox 360 XDK revision, MSVC, GCC, Clang, etc."
+    validations:
+      required: true

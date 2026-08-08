@@ -1,0 +1,25 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XboxTLS13", "xdk\XboxTLS13\XboxTLS13.vcxproj", "{A49D9C6A-6E40-4FB8-B8F4-8D866B8770B1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XboxTLS13Demo", "xdk\XboxTLS13Demo\XboxTLS13Demo.vcxproj", "{DB54E68D-94F1-455A-95C1-8F9BDA6EC8DE}"
+EndProject
+Global
+    GlobalSection(SolutionConfigurationPlatforms) = preSolution
+        Debug|Xbox 360 = Debug|Xbox 360
+        Release|Xbox 360 = Release|Xbox 360
+    EndGlobalSection
+    GlobalSection(ProjectConfigurationPlatforms) = postSolution
+        {A49D9C6A-6E40-4FB8-B8F4-8D866B8770B1}.Debug|Xbox 360.ActiveCfg = Debug|Xbox 360
+        {A49D9C6A-6E40-4FB8-B8F4-8D866B8770B1}.Debug|Xbox 360.Build.0 = Debug|Xbox 360
+        {A49D9C6A-6E40-4FB8-B8F4-8D866B8770B1}.Release|Xbox 360.ActiveCfg = Release|Xbox 360
+        {A49D9C6A-6E40-4FB8-B8F4-8D866B8770B1}.Release|Xbox 360.Build.0 = Release|Xbox 360
+        {DB54E68D-94F1-455A-95C1-8F9BDA6EC8DE}.Debug|Xbox 360.ActiveCfg = Debug|Xbox 360
+        {DB54E68D-94F1-455A-95C1-8F9BDA6EC8DE}.Debug|Xbox 360.Build.0 = Debug|Xbox 360
+        {DB54E68D-94F1-455A-95C1-8F9BDA6EC8DE}.Release|Xbox 360.ActiveCfg = Release|Xbox 360
+        {DB54E68D-94F1-455A-95C1-8F9BDA6EC8DE}.Release|Xbox 360.Build.0 = Release|Xbox 360
+    EndGlobalSection
+    GlobalSection(SolutionProperties) = preSolution
+        HideSolutionNode = FALSE
+    EndGlobalSection
+EndGlobal
